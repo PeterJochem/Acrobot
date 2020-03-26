@@ -14,4 +14,4 @@ It is easiest to run Tensorflow from a virtual enviroment on Linux. Here are ins
 To activate the virtual enviroment: ```source venv/bin/activate```
 
 # How to Run My Code
-```python3 acrobot.py```
+To have the network learn a policy from scratch, run ```python3 acrobot.py```. If the agent scores more than -250 points on an episode, then the network will be saved to a file called models/myModel.h5. To view the learned, solid policy run ```python3 displayTrainedModel.py```
