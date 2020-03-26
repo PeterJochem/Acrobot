@@ -2,7 +2,9 @@
 I used OpenAI's Acrobot enviroment to implement a Q-learning agent. I used Tensorflow/Keras to implement the neural network.
 
 # Results
-This is a gif of the learned policy. Pretty cool!
+This is a gif of the learned policy. The network is pretty unstable. It improves a good deal for an episode or so and then seems to revert to a worse policy.
+
+![Experiment 1](https://github.com/PeterJochem/Acrobot/blob/master/cumulativeReward-1.png "Trial 1")
 
 
 
