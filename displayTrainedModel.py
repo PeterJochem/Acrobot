@@ -20,7 +20,7 @@ env = gym.make('Acrobot-v1')
 # Hyper parameters
 learningRate = 0.80
 discountRate = 0.99
-exploreRate = 1.0
+exploreRate = 0.0
 exploreDecayRate = 0.95
 
 # This is the number of games to play before
@@ -46,15 +46,8 @@ Q_value.compile(loss='mse',  optimizer = Adam(lr = 0.001) )
 
 Q_value = load_model('models/myModel.h5')
 
-
-# This is the memory replay buffer
-memory = []
-
 observation = env.reset()
-
 observation = np.reshape(observation, [1, 6])
-
-observationPrior = copy.deepcopy(observation)
 
 # The action is either applying +1, 0 or -1 torque on the joint between
 # the two pendulum links.
@@ -65,55 +58,17 @@ while (gameNum < numEpisodes):
     
     env.render()
 
-    if ( exploreRate > random.random() ):
-        action = env.action_space.sample()
-    else:
-        # returns the index of the maximum element
-        action = np.argmax( Q_value.predict( observation)[0] ) 
+    # returns the index of the maximum element
+    action = np.argmax( Q_value.predict( observation )[0] ) 
 
     observation, reward, done, info = env.step(action) 
     observation = np.reshape(observation, [1, 6])
 
     totalReward = totalReward + reward
     
-    #if ( done == True ):
-    #    reward = -100
-    
-    # Add the training instance to our memory
-    memory.append( trainingInstance(observationPrior, observation, reward, action, done, gameNum)  )
-    
-    # Sample from the memory and do an epoch of training
-    batchSize = 20 # 20 #10
-    batch = memory
-    if ( len(memory) < batchSize):
-        batch = memory
-    else:
-        batch = random.sample(memory, batchSize)
-
-    for i in range(len(batch) ):
-        value = Q_value.predict(batch[i].observationPrior)
-
-        value[0][action] = batch[i].reward
-    
-        if ( (batch[i].action == 0) and (batch[i].done == False) ):
-            value[0][0] = batch[i].reward + discountRate * np.amax(Q_value.predict(batch[i].observation)[0] )
-        elif ( (batch[i].action == 1) and (batch[i].done == False) ):
-            value[0][1] = batch[i].reward + discountRate * np.amax(Q_value.predict(batch[i].observation)[0] )
-        elif ( (batch[i].action == 2) and (batch[i].done == False) ):
-            value[0][2] = batch[i].reward + discountRate * np.amax(Q_value.predict(batch[i].observation)[0] )
-
-        
-        # Q_value.fit( batch[i].observationPrior, value, epochs = 2, verbose = 0)
-    
-    exploreRate = exploreRate * exploreDecayRate
-    exploreRate = max(exploreRate, 0.01)
-
-    observationPrior = copy.deepcopy(observation)
-
     if (done == True):
-        observation = env.reset()
+        env.reset()
         observation = np.reshape(observation, [1, 6])
-        observationPrior = copy.deepcopy(observation)
         
         gameNum = gameNum + 1
             
@@ -123,22 +78,13 @@ while (gameNum < numEpisodes):
         print("For the last completed episode: " + str(gameNum) +  " we scored " + str(totalReward) )
         allReward.append(totalReward)
         
-        if ( totalReward > -250 ):
-            Q_value.save('models/myModel.h5')
-
         totalReward = 0
      
-    # Periodically empty the memory buffer and up the explore rate
-    if ( gameNum % 10 == 0):    
-        memory = []
-        exploreRate = 0.3
-
-
 # Plot the data
-plt.plot( allReward )
-plt.ylabel('Cumulative Reward')
-plt.xlabel('Episode')
-plt.show()
+#plt.plot( allReward )
+#plt.ylabel('Cumulative Reward')
+#plt.xlabel('Episode')
+#plt.show()
 
 
 env.close()
