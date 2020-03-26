@@ -44,6 +44,9 @@ Q_value.add(Dense(24, activation='relu'))
 Q_value.add(Dense(3, activation='linear'))
 Q_value.compile(loss='mse',  optimizer = Adam(lr = 0.001) )
 
+Q_value = load_model('models/myModel.h5')
+
+
 # This is the memory replay buffer
 memory = []
 
@@ -100,7 +103,7 @@ while (gameNum < numEpisodes):
             value[0][2] = batch[i].reward + discountRate * np.amax(Q_value.predict(batch[i].observation)[0] )
 
         
-        Q_value.fit( batch[i].observationPrior, value, epochs = 2, verbose = 0)
+        # Q_value.fit( batch[i].observationPrior, value, epochs = 2, verbose = 0)
     
     exploreRate = exploreRate * exploreDecayRate
     exploreRate = max(exploreRate, 0.01)
