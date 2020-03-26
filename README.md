@@ -6,6 +6,8 @@ This is a gif of the learned policy. The network is pretty unstable. It improves
 
 ![Experiment 1](https://github.com/PeterJochem/Acrobot/blob/master/cumulativeReward-1.png "Trial 1")
 
+![Learned Policy](https://github.com/PeterJochem/Acrobot/blob/master/learnedPolicy.gif "Learned Policy")
+
 
 
 # Tensorflow and Virtual Enviroment Setup
